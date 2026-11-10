@@ -1,4 +1,4 @@
-# Lab 2 — Infrastructure as Code
+# Lab 2 — Cloud Resource Provisioning
 
 This project demonstrates an Infrastructure as Code workflow using **Packer and Terraform** on AWS.
 
@@ -45,30 +45,6 @@ The infrastructure uses an **Auto Scaling Group** to maintain multiple HAProxy n
 
 The Auto Scaling Group maintains the desired number of HAProxy nodes. The Application Load Balancer sends requests only to healthy nodes.
 
-## Tools
-
-* AWS
-* Packer
-* Terraform
-* Ubuntu 24.04
-* HAProxy
-
-## Project structure
-
-```text
-lab-2/
-├── README.md
-├── packer/
-│   └── haproxy.pkr.hcl
-└── terraform/
-    ├── provider.tf
-    ├── network.tf
-    ├── compute.tf
-    ├── load_balancer.tf
-    ├── variables.tf
-    └── outputs.tf
-```
-
 ## 1. Configure AWS access
 
 Log in to the TalTech AWS account using AWS SSO:
@@ -76,12 +52,6 @@ Log in to the TalTech AWS account using AWS SSO:
 ```bash
 export AWS_PROFILE=taltech
 aws sso login --profile taltech
-```
-
-Verify that the credentials work:
-
-```bash
-aws sts get-caller-identity
 ```
 
 ## 2. Build the AMI
@@ -111,6 +81,8 @@ Copy the resulting AMI ID into `terraform/compute.tf`.
 ## 3. Create the infrastructure
 
 ```bash
+cd terraform
+
 terraform init
 terraform plan
 terraform apply
@@ -161,18 +133,3 @@ When finished, destroy the infrastructure:
 ```bash
 terraform destroy
 ```
-
-This removes the Application Load Balancer, Target Group, Auto Scaling Group, Launch Template, security groups, and EC2 instances.
-
-The custom AMI remains and can be reused.
-
-## Workflow summary
-
-```text
-Packer    → builds the HAProxy machine image
-Terraform → creates the AWS infrastructure
-ASG       → maintains the HAProxy node fleet
-ALB       → distributes traffic between healthy nodes
-```
-
-Infrastructure can be recreated from code without manually configuring AWS resources or servers.
